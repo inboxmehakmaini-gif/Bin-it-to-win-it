@@ -169,6 +169,9 @@
 </div>
 
 <script>
+    // --- GLOBAL LEADERBOARD CONFIG ---
+    const SCRIPT_URL = https://script.google.com/macros/s/AKfycby4Oauf9hlaGeRFLOR5rT6SBdomtLCqvDbH1O_upWWxclHjJop3_EctZ-oUpMXERXzO/exec; 
+    // ---------------------------------
     let score = 0, coins = 0, lives = 5, active = false, playerName = "";
     
     const binNames = {
@@ -177,6 +180,26 @@
         'recyclable': 'Recyclable',
         'non-recycle': 'Non-Recycle'
     };
+
+    async function saveGlobalScore(n, s) {
+        try {
+            await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ name: n, score: s }) });
+            loadGlobalLeaderboard();
+        } catch (e) { console.error(e); loadGlobalLeaderboard(); }
+    }
+
+    async function loadGlobalLeaderboard() {
+        const lb = document.getElementById('lb-content');
+        lb.innerHTML = "🌍 LOADING GLOBAL SCORES...";
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            lb.innerHTML = "<h3 style='margin:0;'>🏆 GLOBAL TOP 5</h3>";
+            data.forEach((entry, i) => {
+                lb.innerHTML += `<div class="lb-row"><span>${i+1}. ${entry[0]}</span><span>${entry[1]}</span></div>`;
+            });
+        } catch (e) { lb.innerHTML = "Leaderboard connection error."; }
+    }
 
     // 20 DIFFERENT ITEMS
     const items = [
@@ -278,7 +301,10 @@
         lives--;
         triggerFeedback(false, correctBin);
         document.getElementById('lives').innerText = "♥️".repeat(lives) + "🖤".repeat(5 - lives);
-        if (lives <= 0) gameOver();
+        if (lives <= 0) {
+            saveGlobalScore(playerName, score);
+            gameOver();
+        }
     }
 
     function gameOver() {
