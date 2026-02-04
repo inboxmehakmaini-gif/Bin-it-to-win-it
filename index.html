@@ -25,7 +25,7 @@
         .bin::after { content: ''; position: absolute; top: -10px; width: 110%; height: 12px; background: inherit; filter: brightness(1.1); border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .label { font-size: 9px; font-weight: bold; margin-top: 15px; color: #1b3a00; text-transform: uppercase; text-align: center; }
 
-        /* Items - FORCING VISIBILITY */
+        /* Items */
         .item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 1500 !important; cursor: move; touch-action: none; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); visibility: visible !important; }
 
         /* Screens */
@@ -140,11 +140,19 @@
             isDragging = false;
             const b = document.getElementById(info.t).getBoundingClientRect();
             const r = el.getBoundingClientRect();
-            if(r.bottom > b.top && r.left < b.right && r.right > b.left) {
+            
+            // Check if center of item is within bin boundaries
+            const itemCenterX = r.left + r.width / 2;
+            const itemCenterY = r.top + r.height / 2;
+
+            if (itemCenterX > b.left && itemCenterX < b.right && itemCenterY > (b.top - 20) && itemCenterY < b.bottom) {
                 score += 10;
                 document.getElementById('score-val').innerText = score;
                 showFeedback("Great! ✅", true);
                 clearInterval(fall); el.remove();
+            } else {
+                // If not in the bin, let it continue falling from current height
+                y = parseFloat(el.style.top);
             }
         };
         setTimeout(spawn, Math.max(1000, 2800 - (score * 2.5)));
