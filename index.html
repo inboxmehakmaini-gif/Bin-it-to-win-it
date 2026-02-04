@@ -11,7 +11,6 @@
         
         #game-box { position: relative; width: 100%; height: 100%; z-index: 1; }
         
-        /* FIXED HEADER FOR MOBILE */
         .stats { position: absolute; top: 10px; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 2000; font-weight: bold; color: #333; }
         .score-display { background: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 15px; font-size: 1rem; }
         .lives-display { font-size: 1.2rem; letter-spacing: 2px; }
@@ -20,22 +19,30 @@
         .correct { color: #2e7d32; }
         .incorrect { color: #d32f2f; }
 
-        /* BINS - FIXED WIDTH FOR DESKTOP */
         .bin-row { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 10px; z-index: 10; }
         .bin-container { display: flex; flex-direction: column; align-items: center; width: 22%; max-width: 100px; }
         .bin { width: 100%; height: 85px; border-radius: 0 0 12px 12px; position: relative; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: inset -5px 0 10px rgba(0,0,0,0.1); }
         .bin::after { content: ''; position: absolute; top: -10px; width: 112%; height: 14px; background: inherit; filter: brightness(1.1); border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .label { font-size: 10px; font-weight: bold; margin-top: 18px; color: #1b3a00; text-transform: uppercase; text-align: center; width: 100%; overflow: hidden; }
+        .label { font-size: 10px; font-weight: bold; margin-top: 18px; color: #1b3a00; text-transform: uppercase; text-align: center; width: 100%; }
 
-        /* Items */
         .item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 1500; cursor: move; touch-action: none; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
 
-        /* Screens */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 5000; }
         .modal { background: white; padding: 30px; border-radius: 25px; width: 90%; text-align: center; max-width: 400px; }
-        .instructions { background: #f0f7ff; border: 1px solid #c2e0ff; padding: 15px; border-radius: 15px; text-align: left; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.4; }
+        .instructions { background: #f0f7ff; border: 1px solid #c2e0ff; padding: 15px; border-radius: 15px; text-align: left; margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6; color: #333; }
+        
+        /* NEW LEADERBOARD UI */
+        .lb-container { margin: 15px 0; background: #fff; border: 1px solid #eee; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .lb-header { background: #ff9800; color: white; padding: 8px; font-weight: bold; font-size: 0.9rem; display: flex; justify-content: space-between; padding: 8px 15px; }
+        .lb-row { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-rank { font-weight: bold; color: #ff9800; margin-right: 10px; }
+        .lb-name { flex-grow: 1; text-align: left; color: #444; }
+        .lb-score { font-weight: bold; color: #333; }
+
         input { padding: 12px; width: 90%; border-radius: 10px; border: 2px solid #ddd; margin-bottom: 20px; font-size: 1rem; text-align: center; }
-        .btn { background: #ff9800; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #e65100; }
+        .btn { background: #ff9800; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #e65100; transition: transform 0.1s; }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #e65100; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -57,13 +64,12 @@
 
     <div id="start-screen" class="overlay">
         <div class="modal">
-            <h1 style="color:#ff9800; margin:0 0 15px 0;">Eco-Sort!</h1>
+            <h1 style="color:#ff9800; margin:0 0 15px 0;">Waste Manager</h1>
             <div class="instructions">
-                <strong>Goal:</strong> Drag falling items to the correct bins.<br>
-                <strong>Organic:</strong> Food & plants<br>
-                <strong>Hazardous:</strong> Batteries & chemicals<br>
-                <strong>Recyclable:</strong> Paper, glass, cans<br>
-                <strong>Non-Recycle:</strong> General trash
+                <strong>How to Play:</strong><br>
+                1. 20+ different items will drop.<br>
+                2. Drag and drop to the correct bin.<br>
+                3. You have 5 lifelines (♥️)
             </div>
             <input type="text" id="user-name" placeholder="Enter Your Name" maxlength="10">
             <button class="btn" onclick="play()">START MISSION</button>
@@ -72,9 +78,16 @@
 
     <div id="end-screen" class="overlay hidden">
         <div class="modal">
-            <h2>Mission Over</h2>
-            <p id="final-score" style="font-size:1.5rem; font-weight:bold;"></p>
-            <div id="lb" style="text-align: left; background: #f5f5f5; padding: 10px; border-radius: 10px; font-size: 0.9rem; margin-bottom: 20px;">Saving score...</div>
+            <h2 style="margin-top:0;">Mission Over</h2>
+            <p id="final-score" style="font-size:1.5rem; font-weight:bold; margin:10px 0; color:#ff9800;"></p>
+            
+            <div class="lb-container">
+                <div class="lb-header"><span>🏆 RANKINGS</span><span>SCORE</span></div>
+                <div id="lb-content">
+                    <div style="padding:20px; font-size:0.8rem; color:#888;">Updating leaderboard...</div>
+                </div>
+            </div>
+
             <button class="btn" onclick="location.reload()">RETRY</button>
         </div>
     </div>
@@ -84,10 +97,10 @@
     const URL = "https://script.google.com/macros/s/AKfycby4Oauf9hlaGeRFLOR5rT6SBdomtLCqvDbH1O_upWWxclHjJop3_EctZ-oUpMXERXzO/exec";
     let score = 0, lives = 5, isRunning = false;
     const trash = [
-        {e:'🍎', t:'org'}, {e:'🍌', t:'org'}, {e:'🍕', t:'org'},
-        {e:'🔋', t:'haz'}, {e:'🧪', t:'haz'},
-        {e:'📰', t:'rec'}, {e:'🥫', t:'rec'},
-        {e:'🚬', t:'non'}, {e:'🥤', t:'non'}
+        {e:'🍎', t:'org'}, {e:'🍌', t:'org'}, {e:'🍕', t:'org'}, {e:'🥦', t:'org'}, {e:'🥯', t:'org'},
+        {e:'🔋', t:'haz'}, {e:'🧪', t:'haz'}, {e:'💉', t:'haz'}, {e:'☢️', t:'haz'}, {e:'💣', t:'haz'},
+        {e:'📰', t:'rec'}, {e:'🥫', t:'rec'}, {e:'🍾', t:'rec'}, {e:'📦', t:'rec'}, {e:'🥛', t:'rec'},
+        {e:'🚬', t:'non'}, {e:'🥤', t:'non'}, {e:'🥡', t:'non'}, {e:'🎈', t:'non'}, {e:'👞', t:'non'}
     ];
 
     function play() {
@@ -141,10 +154,7 @@
             isDragging = false;
             const r = el.getBoundingClientRect();
             const center = { x: r.left + r.width/2, y: r.top + r.height/2 };
-            
             let targetBin = document.getElementById(info.t).getBoundingClientRect();
-            
-            // Check if item is inside the correct bin
             if (center.x > targetBin.left && center.x < targetBin.right && center.y > targetBin.top - 20) {
                 score += 10;
                 document.getElementById('score-val').innerText = score;
@@ -164,21 +174,27 @@
         if(lives <= 0) {
             isRunning = false;
             document.getElementById('end-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = "Final Score: " + score;
+            document.getElementById('final-score').innerText = "Score: " + score;
             save();
         }
     }
 
     async function save() {
         const name = document.getElementById('user-name').value || "Player";
+        const content = document.getElementById('lb-content');
         try {
             await fetch(URL, {method:"POST", mode:"no-cors", body: JSON.stringify({name:name, score:score})});
             const res = await fetch(URL);
             const data = await res.json();
-            let h = "<b>Leaderboard:</b><br>";
-            data.slice(0,5).forEach((r, i) => h += (i+1) + ". " + r[0] + ": " + r[1] + "<br>");
-            document.getElementById('lb').innerHTML = h;
-        } catch(e) { document.getElementById('lb').innerText = "Score recorded!"; }
+            let html = "";
+            data.slice(0,5).forEach((r, i) => {
+                html += `<div class="lb-row">
+                            <span><span class="lb-rank">#${i+1}</span><span class="lb-name">${r[0]}</span></span>
+                            <span class="lb-score">${r[1]}</span>
+                         </div>`;
+            });
+            content.innerHTML = html;
+        } catch(e) { content.innerHTML = `<div style="padding:15px; color:#666;">Score recorded!</div>`; }
     }
 </script>
 </body>
