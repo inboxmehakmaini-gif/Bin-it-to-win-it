@@ -5,31 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bin It to Win It!</title>
     <style>
-        :root {
-            --sky-blue: #b3e5fc; --grass-green: #a2d149; --panel-blue: #a3d8f4;
-            --organic: #8bc34a; --hazardous: #e53935; --recyclable: #fdd835; --non-recycle: #1e88e5;
-        }
+        :root { --sky-blue: #b3e5fc; --grass-green: #a2d149; --panel-blue: #a3d8f4; --organic: #8bc34a; --hazardous: #e53935; --recyclable: #fdd835; --non-recycle: #1e88e5; }
         body { margin: 0; padding: 0; font-family: 'Arial Rounded MT Bold', sans-serif; background: linear-gradient(to bottom, #e1f5fe 0%, var(--sky-blue) 60%, var(--grass-green) 100%); overflow: hidden; touch-action: none; display: flex; justify-content: center; }
         #game-area { width: 100%; max-width: 500px; height: 100vh; position: relative; overflow: hidden; }
         .header { display: flex; flex-direction: column; gap: 10px; padding: 15px; position: absolute; width: 100%; box-sizing: border-box; z-index: 10; }
         .top-row { display: flex; justify-content: space-between; align-items: center; }
-        .stat-box { background: var(--panel-blue); padding: 8px 15px; border-radius: 12px; color: white; font-weight: bold; box-shadow: 0 4px 0 rgba(0,0,0,0.1); border: 2px solid white; font-size: 1rem; }
-        .lives-display { font-size: 1.4rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
-        #feedback-text { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 1.8rem; font-weight: bold; z-index: 20; pointer-events: none; opacity: 0; text-align: center; width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: opacity 0.2s, transform 0.4s; }
+        .stat-box { background: var(--panel-blue); padding: 8px 15px; border-radius: 12px; color: white; font-weight: bold; border: 2px solid white; font-size: 1rem; }
+        .lives-display { font-size: 1.4rem; }
+        #feedback-text { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 1.8rem; font-weight: bold; z-index: 20; pointer-events: none; opacity: 0; text-align: center; width: 90%; transition: opacity 0.2s, transform 0.4s; }
         .correct { color: #2e7d32; } .incorrect { color: #d32f2f; }
         .bins-container { position: absolute; bottom: 30px; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 10px; box-sizing: border-box; }
         .bin-wrapper { text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .dustbin { width: 65px; height: 85px; position: relative; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: rgba(255,255,255,0.7); box-shadow: inset -5px 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1); }
-        .dustbin::before { content: ''; position: absolute; top: -10px; left: -5px; width: 75px; height: 12px; border-radius: 5px; background: inherit; filter: brightness(1.1); }
-        .label { margin-top: 15px; font-size: 0.6rem; font-weight: bold; color: #2e5a00; text-transform: uppercase; }
+        .dustbin { width: 60px; height: 80px; position: relative; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .label { margin-top: 10px; font-size: 0.6rem; font-weight: bold; color: #2e5a00; text-transform: uppercase; }
         .trash-item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 5; cursor: grab; touch-action: none; }
-        .screen { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .card { background: white; padding: 25px; border-radius: 25px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .instructions { text-align: left; background: #f0f7ff; padding: 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; color: #444; margin-bottom: 15px; border: 1px solid #d0e5ff; }
+        .screen { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .card { background: white; padding: 25px; border-radius: 25px; width: 85%; text-align: center; }
         input { width: 80%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 2px solid var(--panel-blue); font-size: 1.1rem; text-align: center; }
-        .btn { background: #ff9800; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #e65100; }
-        .leaderboard { text-align: left; background: #f8f9fa; border-radius: 15px; padding: 15px; margin: 15px 0; max-height: 200px; overflow-y: auto; }
-        .lb-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; color: #333; }
+        .btn { background: #ff9800; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+        .leaderboard { text-align: left; background: #f8f9fa; border-radius: 15px; padding: 15px; margin: 15px 0; max-height: 180px; overflow-y: auto; font-size: 0.9rem; }
+        .lb-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
         .hidden { display: none; }
     </style>
 </head>
@@ -56,71 +51,48 @@
         <div class="card">
             <h1 style="color:#ff9800; margin-top:0;">WASTE MANAGER</h1>
             <input type="text" id="username" placeholder="Enter Your Name" maxlength="12">
-            <button class="btn" onclick="init()">START MISSION</button>
+            <button class="btn" onclick="startGame()">START MISSION</button>
         </div>
     </div>
 
     <div id="end-screen" class="screen hidden">
         <div class="card">
             <h2 style="margin-top:0;">MISSION COMPLETE</h2>
-            <div class="leaderboard" id="lb-content"></div>
+            <div id="final-score-text"></div>
+            <div class="leaderboard" id="lb-content">Loading Scores...</div>
             <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
         </div>
     </div>
 </div>
 
 <script>
+    // --- SETTINGS ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4Oauf9hlaGeRFLOR5rT6SBdomtLCqvDbH1O_upWWxclHjJop3_EctZ-oUpMXERXzO/exec"; 
-    let score = 0, coins = 0, lives = 5, active = false, playerName = "";
-    const binNames = {'organic': 'Organic', 'hazardous': 'Hazardous', 'recyclable': 'Recyclable', 'non-recycle': 'Non-Recycle'};
+    
+    let score = 0, lives = 5, active = false, playerName = "";
     const items = [
-        { e: '🍎', t: 'organic' }, { e: '🍌', t: 'organic' }, { e: '🍉', t: 'organic' }, { e: '🥦', t: 'organic' },
-        { e: '🔋', t: 'hazardous' }, { e: '☢️', t: 'hazardous' }, { e: '🌡️', t: 'hazardous' }, { e: '💉', t: 'hazardous' },
-        { e: '🍾', t: 'recyclable' }, { e: '📰', t: 'recyclable' }, { e: '📦', t: 'recyclable' }, { e: '🥫', t: 'recyclable' },
-        { e: '🚬', t: 'non-recycle' }, { e: '🥤', t: 'non-recycle' }, { e: '🥡', t: 'non-recycle' }, { e: '🍕', t: 'non-recycle' }
+        { e: '🍎', t: 'organic' }, { e: '🍌', t: 'organic' }, { e: '🥦', t: 'organic' },
+        { e: '🔋', t: 'hazardous' }, { e: '🧪', t: 'hazardous' }, { e: '💉', t: 'hazardous' },
+        { e: '🍾', t: 'recyclable' }, { e: '📰', t: 'recyclable' }, { e: '🥫', t: 'recyclable' },
+        { e: '🚬', t: 'non-recycle' }, { e: '🥤', t: 'non-recycle' }, { e: '🍕', t: 'non-recycle' }
     ];
 
-    function init() {
+    function startGame() {
         playerName = document.getElementById('username').value.trim() || "Eco-Hero";
         document.getElementById('start-screen').classList.add('hidden');
         active = true;
-        spawnLoop();
+        spawnItem();
     }
 
-    async function saveGlobalScore(n, s) {
-        try {
-            await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ name: n, score: s }) });
-            loadGlobalLeaderboard();
-        } catch (e) { loadGlobalLeaderboard(); }
-    }
-
-    async function loadGlobalLeaderboard() {
-        const lb = document.getElementById('lb-content');
-        lb.innerHTML = "🌍 LOADING GLOBAL SCORES...";
-        try {
-            const res = await fetch(SCRIPT_URL);
-            const data = await res.json();
-            lb.innerHTML = "<h3 style='margin:0;'>🏆 GLOBAL TOP 5</h3>";
-            data.forEach((entry, i) => {
-                lb.innerHTML += `<div class="lb-row"><span>${i+1}. ${entry[0]}</span><span>${entry[1]}</span></div>`;
-            });
-        } catch (e) { lb.innerHTML = "Leaderboard error."; }
-    }
-
-    function triggerFeedback(isCorrect, correctType = "") {
+    function triggerFeedback(isCorrect) {
         const fb = document.getElementById('feedback-text');
-        if (isCorrect) { fb.innerText = "Correct ✅"; fb.className = "correct"; }
-        else { 
-            let name = binNames[correctType];
-            if(correctType === 'non-recycle') name = "Non-Recyclable (Greasy)";
-            fb.innerHTML = `Incorrect ❌<br><small>It was ${name}</small>`; 
-            fb.className = "incorrect"; 
-        }
+        fb.innerText = isCorrect ? "Correct ✅" : "Incorrect ❌";
+        fb.className = isCorrect ? "correct" : "incorrect";
         fb.style.opacity = '1';
-        setTimeout(() => { fb.style.opacity = '0'; }, 1200);
+        setTimeout(() => { fb.style.opacity = '0'; }, 1000);
     }
 
-    function spawnLoop() {
+    function spawnItem() {
         if (!active) return;
         const data = items[Math.floor(Math.random() * items.length)];
         const el = document.createElement('div');
@@ -133,9 +105,9 @@
         const fall = setInterval(() => {
             if (!active) { clearInterval(fall); el.remove(); return; }
             if (!isDragging) {
-                y += 1.2 + (score / 500);
+                y += 1.5 + (score / 400);
                 el.style.top = y + 'px';
-                if (y > window.innerHeight - 150) { handleMistake(data.t); clearInterval(fall); el.remove(); }
+                if (y > window.innerHeight - 150) { loseLife(); clearInterval(fall); el.remove(); }
             }
         }, 16);
 
@@ -143,27 +115,49 @@
         el.onpointermove = (e) => { if (isDragging) { el.style.left = (e.clientX - 35) + 'px'; el.style.top = (e.clientY - 35) + 'px'; } };
         el.onpointerup = (e) => {
             isDragging = false;
-            const rect = el.getBoundingClientRect();
             const bin = document.getElementById(data.t).getBoundingClientRect();
+            const rect = el.getBoundingClientRect();
             if (rect.bottom > bin.top && rect.left < bin.right && rect.right > bin.left) {
                 score += 10; document.getElementById('score').innerText = score;
                 triggerFeedback(true); clearInterval(fall); el.remove();
             } else if (rect.bottom > bin.top - 50) {
-                handleMistake(data.t); clearInterval(fall); el.remove();
-            } else { y = parseFloat(el.style.top); }
+                loseLife(); clearInterval(fall); el.remove();
+            }
         };
-        setTimeout(spawnLoop, Math.max(1200, 3000 - (score * 4)));
+        setTimeout(spawnItem, 2500 - Math.min(1500, score * 2));
     }
 
-    function handleMistake(c) {
+    function loseLife() {
         lives--;
         document.getElementById('lives').innerText = "♥️".repeat(lives) + "🖤".repeat(5 - lives);
-        triggerFeedback(false, c);
-        if (lives <= 0) { 
-            active = false; 
-            document.getElementById('end-screen').classList.remove('hidden'); 
-            saveGlobalScore(playerName, score); 
-        }
+        triggerFeedback(false);
+        if (lives <= 0) endGame();
+    }
+
+    function endGame() {
+        active = false;
+        document.getElementById('end-screen').classList.remove('hidden');
+        document.getElementById('final-score-text').innerText = "Final Score: " + score;
+        submitScore();
+    }
+
+    async function submitScore() {
+        try {
+            await fetch(SCRIPT_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({ name: playerName, score: score }) });
+            fetchLeaderboard();
+        } catch (e) { fetchLeaderboard(); }
+    }
+
+    async function fetchLeaderboard() {
+        const lb = document.getElementById('lb-content');
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            lb.innerHTML = "🏆 GLOBAL TOP 5<br>";
+            data.forEach((row, i) => {
+                lb.innerHTML += `<div class="lb-row"><span>${i+1}. ${row[0]}</span><span>${row[1]}</span></div>`;
+            });
+        } catch (e) { lb.innerText = "Check your Google Sheet for scores!"; }
     }
 </script>
 </body>
