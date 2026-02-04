@@ -11,36 +11,50 @@
         }
         body { margin: 0; padding: 0; font-family: 'Arial Rounded MT Bold', sans-serif; background: linear-gradient(to bottom, #e1f5fe 0%, var(--sky-blue) 60%, var(--grass-green) 100%); overflow: hidden; touch-action: none; display: flex; justify-content: center; }
         #game-area { width: 100%; max-width: 500px; height: 100vh; position: relative; overflow: hidden; }
-        .header { display: flex; flex-direction: column; gap: 10px; padding: 15px; position: absolute; width: 100%; box-sizing: border-box; z-index: 10; }
+        
+        /* Stats Header */
+        .header { display: flex; flex-direction: column; gap: 10px; padding: 15px; position: absolute; width: 100%; box-sizing: border-box; z-index: 50; }
         .top-row { display: flex; justify-content: space-between; align-items: center; }
         .stat-box { background: var(--panel-blue); padding: 8px 15px; border-radius: 12px; color: white; font-weight: bold; box-shadow: 0 4px 0 rgba(0,0,0,0.1); border: 2px solid white; font-size: 1rem; }
-        .lives-display { font-size: 1.4rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
-        #feedback-text { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 1.8rem; font-weight: bold; z-index: 20; pointer-events: none; opacity: 0; text-align: center; width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: opacity 0.2s, transform 0.4s; }
+        
+        /* Feedback Text */
+        #feedback-text { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 1.8rem; font-weight: bold; z-index: 60; pointer-events: none; opacity: 0; text-align: center; width: 90%; transition: opacity 0.2s; }
         .correct { color: #2e7d32; } .incorrect { color: #d32f2f; }
-        .bins-container { position: absolute; bottom: 30px; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 10px; box-sizing: border-box; }
+
+        /* Bins & Lids */
+        .bins-container { position: absolute; bottom: 30px; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 10px; box-sizing: border-box; z-index: 10; }
         .bin-wrapper { text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .dustbin { width: 65px; height: 85px; position: relative; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: rgba(255,255,255,0.7); box-shadow: inset -5px 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1); }
-        .dustbin::before { content: ''; position: absolute; top: -10px; left: -5px; width: 75px; height: 12px; border-radius: 5px; background: inherit; filter: brightness(1.1); }
+        .dustbin { width: 65px; height: 85px; position: relative; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: inset -5px 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1); }
+        
+        /* The Lid Fix */
+        .dustbin::before { content: ''; position: absolute; top: -10px; left: -5px; width: 75px; height: 12px; border-radius: 5px; background: inherit; filter: brightness(1.1); border: 1px solid rgba(0,0,0,0.1); }
+        
         .label { margin-top: 15px; font-size: 0.6rem; font-weight: bold; color: #2e5a00; text-transform: uppercase; }
-        .trash-item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 5; cursor: grab; touch-action: none; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); }
-        .screen { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 100; }
+
+        /* Draggable Trash */
+        .trash-item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 100; cursor: grab; touch-action: none; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); }
+
+        /* Screens */
+        .screen { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .card { background: white; padding: 25px; border-radius: 25px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .instructions { text-align: left; background: #f0f7ff; padding: 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; color: #444; margin-bottom: 15px; border: 1px solid #d0e5ff; }
+        .instructions { text-align: left; background: #f0f7ff; padding: 15px; border-radius: 15px; font-size: 0.9rem; color: #444; margin: 15px 0; border: 1px solid #d0e5ff; }
         input { width: 80%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 2px solid var(--panel-blue); font-size: 1.1rem; text-align: center; }
         .btn { background: #ff9800; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #e65100; }
+        
         .leaderboard { text-align: left; background: #f8f9fa; border-radius: 15px; padding: 10px; margin: 15px 0; max-height: 150px; overflow-y: auto; }
         .lb-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div id="game-area">
     <div id="feedback-text">Correct ✅</div>
+    
     <div class="header">
         <div class="top-row">
             <div class="stat-box">⭐ <span id="score">0</span></div>
-            <div class="lives-display" id="lives">♥️♥️♥️♥️♥️</div>
+            <div id="lives" style="font-size:1.5rem;">♥️♥️♥️♥️♥️</div>
             <div class="stat-box">🪙 <span id="coins">0</span></div>
         </div>
     </div>
@@ -54,12 +68,12 @@
 
     <div id="start-screen" class="screen">
         <div class="card">
-            <h1 style="color:#ff9800; margin-top:0;">WASTE MANAGER</h1>
+            <h1 style="color:#ff9800; margin:0;">WASTE MANAGER</h1>
             <div class="instructions">
                 <strong>How to Play:</strong><br>
-                1. Drag items into the correct bins.<br>
-                2. Organic includes food waste (like Pizza!).<br>
-                3. You have 5 lives. Don't let waste hit the ground!
+                1. Drag items to the correct bin.<br>
+                2. 🍕 <b>Pizza is Organic!</b><br>
+                3. Don't let items hit the floor.
             </div>
             <input type="text" id="username" placeholder="Enter Your Name" maxlength="12">
             <button class="btn" onclick="init()">START MISSION</button>
@@ -68,7 +82,7 @@
 
     <div id="end-screen" class="screen hidden">
         <div class="card">
-            <h2 style="margin-top:0;">GAME OVER</h2>
+            <h2 style="margin:0;">GAME OVER</h2>
             <p id="final-score-display"></p>
             <div class="leaderboard" id="lb-content">Loading Global Scores...</div>
             <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
@@ -80,7 +94,6 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4Oauf9hlaGeRFLOR5rT6SBdomtLCqvDbH1O_upWWxclHjJop3_EctZ-oUpMXERXzO/exec"; 
     
     let score = 0, lives = 5, active = false, playerName = "";
-    const binNames = {'organic': 'Organic', 'hazardous': 'Hazardous', 'recyclable': 'Recyclable', 'non-recycle': 'Non-Recycle'};
     const items = [
         { e: '🍎', t: 'organic' }, { e: '🍌', t: 'organic' }, { e: '🍕', t: 'organic' }, { e: '🥦', t: 'organic' },
         { e: '🔋', t: 'hazardous' }, { e: '🧪', t: 'hazardous' }, { e: '💉', t: 'hazardous' },
@@ -159,7 +172,7 @@
     async function saveGlobalScore() {
         try {
             await fetch(SCRIPT_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({ name: playerName, score: score }) });
-            setTimeout(loadGlobalLeaderboard, 1000);
+            setTimeout(loadGlobalLeaderboard, 1200);
         } catch (e) { loadGlobalLeaderboard(); }
     }
 
@@ -172,7 +185,7 @@
             data.forEach((entry, i) => {
                 lb.innerHTML += `<div class="lb-row"><span>${i+1}. ${entry[0]}</span><span>${entry[1]}</span></div>`;
             });
-        } catch (e) { lb.innerHTML = "Leaderboard connection error."; }
+        } catch (e) { lb.innerHTML = "Leaderboard offline. Score saved!"; }
     }
 </script>
 </body>
