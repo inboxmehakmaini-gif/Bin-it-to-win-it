@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Waste Manager</title>
     <style>
         :root { --sky: #b3e5fc; --grass: #a2d149; --org: #8bc34a; --haz: #e53935; --rec: #fdd835; --non: #1e88e5; }
@@ -11,29 +11,29 @@
         
         #game-box { position: relative; width: 100%; height: 100%; z-index: 1; }
         
-        /* UI Elements */
-        .stats { position: absolute; top: 15px; width: 100%; display: flex; justify-content: space-around; z-index: 2000; font-weight: bold; color: #333; font-size: 1.2rem; }
+        /* FIXED HEADER FOR MOBILE */
+        .stats { position: absolute; top: 10px; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 2000; font-weight: bold; color: #333; }
+        .score-display { background: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 15px; font-size: 1rem; }
+        .lives-display { font-size: 1.2rem; letter-spacing: 2px; }
         
         #feedback-text { position: absolute; top: 30%; left: 50%; transform: translateX(-50%); font-size: 2rem; font-weight: bold; z-index: 3000; opacity: 0; transition: opacity 0.2s; pointer-events: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
         .correct { color: #2e7d32; }
         .incorrect { color: #d32f2f; }
 
-        /* Bins */
-        .bin-row { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: space-evenly; align-items: flex-end; padding: 0 5px; z-index: 10; }
-        .bin-container { display: flex; flex-direction: column; align-items: center; width: 23%; }
-        .bin { width: 100%; height: 80px; border-radius: 0 0 10px 10px; position: relative; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: inset -5px 0 10px rgba(0,0,0,0.1); }
-        .bin::after { content: ''; position: absolute; top: -10px; width: 110%; height: 12px; background: inherit; filter: brightness(1.1); border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .label { font-size: 9px; font-weight: bold; margin-top: 15px; color: #1b3a00; text-transform: uppercase; text-align: center; }
+        /* BINS - FIXED WIDTH FOR DESKTOP */
+        .bin-row { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 10px; z-index: 10; }
+        .bin-container { display: flex; flex-direction: column; align-items: center; width: 22%; max-width: 100px; }
+        .bin { width: 100%; height: 85px; border-radius: 0 0 12px 12px; position: relative; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: inset -5px 0 10px rgba(0,0,0,0.1); }
+        .bin::after { content: ''; position: absolute; top: -10px; width: 112%; height: 14px; background: inherit; filter: brightness(1.1); border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .label { font-size: 10px; font-weight: bold; margin-top: 18px; color: #1b3a00; text-transform: uppercase; text-align: center; width: 100%; overflow: hidden; }
 
         /* Items */
-        .item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 1500 !important; cursor: move; touch-action: none; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); visibility: visible !important; }
+        .item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 1500; cursor: move; touch-action: none; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
 
         /* Screens */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 5000; }
-        .modal { background: white; padding: 30px; border-radius: 25px; width: 85%; text-align: center; max-width: 400px; }
-        .modal h1 { color: #ff9800; margin: 0 0 15px 0; }
-        .instructions { background: #f0f7ff; border: 1px solid #c2e0ff; padding: 15px; border-radius: 15px; text-align: left; margin-bottom: 20px; font-size: 0.9rem; }
-        
+        .modal { background: white; padding: 30px; border-radius: 25px; width: 90%; text-align: center; max-width: 400px; }
+        .instructions { background: #f0f7ff; border: 1px solid #c2e0ff; padding: 15px; border-radius: 15px; text-align: left; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.4; }
         input { padding: 12px; width: 90%; border-radius: 10px; border: 2px solid #ddd; margin-bottom: 20px; font-size: 1rem; text-align: center; }
         .btn { background: #ff9800; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #e65100; }
         .hidden { display: none !important; }
@@ -44,8 +44,8 @@
 <div id="game-box">
     <div id="feedback-text"></div>
     <div class="stats">
-        <div>⭐ <span id="score-val">0</span></div>
-        <div id="lives-val">❤️❤️❤️❤️❤️</div>
+        <div class="score-display">Score: ⭐ <span id="score-val">0</span></div>
+        <div class="lives-display" id="lives-val">❤️❤️❤️❤️❤️</div>
     </div>
 
     <div class="bin-row">
@@ -57,12 +57,13 @@
 
     <div id="start-screen" class="overlay">
         <div class="modal">
-            <h1>Eco-Sort!</h1>
+            <h1 style="color:#ff9800; margin:0 0 15px 0;">Eco-Sort!</h1>
             <div class="instructions">
-                <strong>How to Play:</strong><br>
-                1. Drag the falling waste items.<br>
-                2. Drop them into the correct bin below.<br>
-                3. Don't let waste hit the ground!
+                <strong>Goal:</strong> Drag falling items to the correct bins.<br>
+                <strong>Organic:</strong> Food & plants<br>
+                <strong>Hazardous:</strong> Batteries & chemicals<br>
+                <strong>Recyclable:</strong> Paper, glass, cans<br>
+                <strong>Non-Recycle:</strong> General trash
             </div>
             <input type="text" id="user-name" placeholder="Enter Your Name" maxlength="10">
             <button class="btn" onclick="play()">START MISSION</button>
@@ -138,20 +139,18 @@
         };
         el.onpointerup = (e) => {
             isDragging = false;
-            const b = document.getElementById(info.t).getBoundingClientRect();
             const r = el.getBoundingClientRect();
+            const center = { x: r.left + r.width/2, y: r.top + r.height/2 };
             
-            // Check if center of item is within bin boundaries
-            const itemCenterX = r.left + r.width / 2;
-            const itemCenterY = r.top + r.height / 2;
-
-            if (itemCenterX > b.left && itemCenterX < b.right && itemCenterY > (b.top - 20) && itemCenterY < b.bottom) {
+            let targetBin = document.getElementById(info.t).getBoundingClientRect();
+            
+            // Check if item is inside the correct bin
+            if (center.x > targetBin.left && center.x < targetBin.right && center.y > targetBin.top - 20) {
                 score += 10;
                 document.getElementById('score-val').innerText = score;
                 showFeedback("Great! ✅", true);
                 clearInterval(fall); el.remove();
             } else {
-                // If not in the bin, let it continue falling from current height
                 y = parseFloat(el.style.top);
             }
         };
@@ -160,7 +159,8 @@
 
     function lose() {
         lives--;
-        document.getElementById('lives-val').innerText = "❤️".repeat(lives) + "🖤".repeat(5-lives);
+        const hearts = "❤️".repeat(Math.max(0, lives)) + "🖤".repeat(Math.max(0, 5 - lives));
+        document.getElementById('lives-val').innerText = hearts;
         if(lives <= 0) {
             isRunning = false;
             document.getElementById('end-screen').classList.remove('hidden');
