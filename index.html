@@ -6,122 +6,30 @@
     <title>Bin It to Win It!</title>
     <style>
         :root {
-            --sky-blue: #b3e5fc;
-            --grass-green: #a2d149;
-            --panel-blue: #a3d8f4;
-            --organic: #8bc34a;
-            --hazardous: #e53935;
-            --recyclable: #fdd835;
-            --non-recycle: #1e88e5;
+            --sky-blue: #b3e5fc; --grass-green: #a2d149; --panel-blue: #a3d8f4;
+            --organic: #8bc34a; --hazardous: #e53935; --recyclable: #fdd835; --non-recycle: #1e88e5;
         }
-
-        body {
-            margin: 0; padding: 0;
-            font-family: 'Arial Rounded MT Bold', sans-serif;
-            background: linear-gradient(to bottom, #e1f5fe 0%, var(--sky-blue) 60%, var(--grass-green) 100%);
-            overflow: hidden; touch-action: none;
-            display: flex; justify-content: center;
-        }
-
-        #game-area {
-            width: 100%; max-width: 500px; height: 100vh;
-            position: relative; overflow: hidden;
-        }
-
-        .header {
-            display: flex; flex-direction: column;
-            gap: 10px; padding: 15px; position: absolute; width: 100%;
-            box-sizing: border-box; z-index: 10;
-        }
-
+        body { margin: 0; padding: 0; font-family: 'Arial Rounded MT Bold', sans-serif; background: linear-gradient(to bottom, #e1f5fe 0%, var(--sky-blue) 60%, var(--grass-green) 100%); overflow: hidden; touch-action: none; display: flex; justify-content: center; }
+        #game-area { width: 100%; max-width: 500px; height: 100vh; position: relative; overflow: hidden; }
+        .header { display: flex; flex-direction: column; gap: 10px; padding: 15px; position: absolute; width: 100%; box-sizing: border-box; z-index: 10; }
         .top-row { display: flex; justify-content: space-between; align-items: center; }
-
-        .stat-box {
-            background: var(--panel-blue);
-            padding: 8px 15px; border-radius: 12px;
-            color: white; font-weight: bold;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-            border: 2px solid white; font-size: 1rem;
-        }
-
+        .stat-box { background: var(--panel-blue); padding: 8px 15px; border-radius: 12px; color: white; font-weight: bold; box-shadow: 0 4px 0 rgba(0,0,0,0.1); border: 2px solid white; font-size: 1rem; }
         .lives-display { font-size: 1.4rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
-
-        #feedback-text {
-            position: absolute; top: 35%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.8rem; font-weight: bold; z-index: 20;
-            pointer-events: none; opacity: 0;
-            text-align: center; width: 90%;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: opacity 0.2s, transform 0.4s;
-        }
-
-        .correct { color: #2e7d32; }
-        .incorrect { color: #d32f2f; }
-
-        .bins-container {
-            position: absolute; bottom: 30px;
-            width: 100%; display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px; padding: 0 10px; box-sizing: border-box;
-        }
-
+        #feedback-text { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 1.8rem; font-weight: bold; z-index: 20; pointer-events: none; opacity: 0; text-align: center; width: 90%; text-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: opacity 0.2s, transform 0.4s; }
+        .correct { color: #2e7d32; } .incorrect { color: #d32f2f; }
+        .bins-container { position: absolute; bottom: 30px; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 10px; box-sizing: border-box; }
         .bin-wrapper { text-align: center; display: flex; flex-direction: column; align-items: center; }
-
-        .dustbin {
-            width: 65px; height: 85px; position: relative;
-            border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 24px; color: rgba(255,255,255,0.7);
-            box-shadow: inset -5px 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .dustbin::before {
-            content: ''; position: absolute; top: -10px; left: -5px;
-            width: 75px; height: 12px; border-radius: 5px;
-            background: inherit; filter: brightness(1.1);
-        }
-
+        .dustbin { width: 65px; height: 85px; position: relative; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: rgba(255,255,255,0.7); box-shadow: inset -5px 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1); }
+        .dustbin::before { content: ''; position: absolute; top: -10px; left: -5px; width: 75px; height: 12px; border-radius: 5px; background: inherit; filter: brightness(1.1); }
         .label { margin-top: 15px; font-size: 0.6rem; font-weight: bold; color: #2e5a00; text-transform: uppercase; }
-
-        .trash-item {
-            position: absolute; width: 70px; height: 70px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 50px; z-index: 5; cursor: grab; touch-action: none;
-            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
-        }
-
-        .screen {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px); display: flex; justify-content: center;
-            align-items: center; z-index: 100;
-        }
-
-        .card {
-            background: white; padding: 25px; border-radius: 25px;
-            width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .instructions {
-            text-align: left; background: #f0f7ff; padding: 15px;
-            border-radius: 15px; font-size: 0.9rem; line-height: 1.4;
-            color: #444; margin-bottom: 15px; border: 1px solid #d0e5ff;
-        }
-
-        input {
-            width: 80%; padding: 12px; margin-bottom: 15px; border-radius: 10px;
-            border: 2px solid var(--panel-blue); font-size: 1.1rem; text-align: center;
-        }
-
-        .btn {
-            background: #ff9800; color: white; border: none; padding: 12px 30px;
-            border-radius: 30px; font-size: 1.2rem; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 0 #e65100;
-        }
-
-        .leaderboard { text-align: left; background: #f8f9fa; border-radius: 15px; padding: 15px; margin: 15px 0; }
+        .trash-item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 5; cursor: grab; touch-action: none; }
+        .screen { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .card { background: white; padding: 25px; border-radius: 25px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .instructions { text-align: left; background: #f0f7ff; padding: 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; color: #444; margin-bottom: 15px; border: 1px solid #d0e5ff; }
+        input { width: 80%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 2px solid var(--panel-blue); font-size: 1.1rem; text-align: center; }
+        .btn { background: #ff9800; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #e65100; }
+        .leaderboard { text-align: left; background: #f8f9fa; border-radius: 15px; padding: 15px; margin: 15px 0; max-height: 200px; overflow-y: auto; }
         .lb-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; color: #333; }
-
         .hidden { display: none; }
     </style>
 </head>
@@ -129,7 +37,6 @@
 
 <div id="game-area">
     <div id="feedback-text">Correct ✅</div>
-
     <div class="header">
         <div class="top-row">
             <div class="stat-box">⭐ <span id="score">0</span></div>
@@ -148,12 +55,6 @@
     <div id="start-screen" class="screen">
         <div class="card">
             <h1 style="color:#ff9800; margin-top:0;">WASTE MANAGER</h1>
-            <div class="instructions">
-                <strong>How to Play:</strong><br>
-                1. 20+ different items will drop.<br>
-                2. <strong>Drag and drop</strong> to the correct bin.<br>
-                3. You have <strong>5 lifelines (♥️)</strong>.
-            </div>
             <input type="text" id="username" placeholder="Enter Your Name" maxlength="12">
             <button class="btn" onclick="init()">START MISSION</button>
         </div>
@@ -169,23 +70,28 @@
 </div>
 
 <script>
-    // --- GLOBAL LEADERBOARD CONFIG ---
-    const SCRIPT_URL = https://script.google.com/macros/s/AKfycby4Oauf9hlaGeRFLOR5rT6SBdomtLCqvDbH1O_upWWxclHjJop3_EctZ-oUpMXERXzO/exec; 
-    // ---------------------------------
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4Oauf9hlaGeRFLOR5rT6SBdomtLCqvDbH1O_upWWxclHjJop3_EctZ-oUpMXERXzO/exec"; 
     let score = 0, coins = 0, lives = 5, active = false, playerName = "";
-    
-    const binNames = {
-        'organic': 'Organic',
-        'hazardous': 'Hazardous',
-        'recyclable': 'Recyclable',
-        'non-recycle': 'Non-Recycle'
-    };
+    const binNames = {'organic': 'Organic', 'hazardous': 'Hazardous', 'recyclable': 'Recyclable', 'non-recycle': 'Non-Recycle'};
+    const items = [
+        { e: '🍎', t: 'organic' }, { e: '🍌', t: 'organic' }, { e: '🍉', t: 'organic' }, { e: '🥦', t: 'organic' },
+        { e: '🔋', t: 'hazardous' }, { e: '☢️', t: 'hazardous' }, { e: '🌡️', t: 'hazardous' }, { e: '💉', t: 'hazardous' },
+        { e: '🍾', t: 'recyclable' }, { e: '📰', t: 'recyclable' }, { e: '📦', t: 'recyclable' }, { e: '🥫', t: 'recyclable' },
+        { e: '🚬', t: 'non-recycle' }, { e: '🥤', t: 'non-recycle' }, { e: '🥡', t: 'non-recycle' }, { e: '🍕', t: 'non-recycle' }
+    ];
+
+    function init() {
+        playerName = document.getElementById('username').value.trim() || "Eco-Hero";
+        document.getElementById('start-screen').classList.add('hidden');
+        active = true;
+        spawnLoop();
+    }
 
     async function saveGlobalScore(n, s) {
         try {
             await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ name: n, score: s }) });
             loadGlobalLeaderboard();
-        } catch (e) { console.error(e); loadGlobalLeaderboard(); }
+        } catch (e) { loadGlobalLeaderboard(); }
     }
 
     async function loadGlobalLeaderboard() {
@@ -198,133 +104,66 @@
             data.forEach((entry, i) => {
                 lb.innerHTML += `<div class="lb-row"><span>${i+1}. ${entry[0]}</span><span>${entry[1]}</span></div>`;
             });
-        } catch (e) { lb.innerHTML = "Leaderboard connection error."; }
-    }
-
-    // 20 DIFFERENT ITEMS
-    const items = [
-        /* Organic */
-        { e: '🍎', t: 'organic' }, { e: '🍌', t: 'organic' }, { e: '🍉', t: 'organic' }, 
-        { e: '🥚', t: 'organic' }, { e: '🥦', t: 'organic' },
-        /* Hazardous */
-        { e: '🔋', t: 'hazardous' }, { e: '☢️', t: 'hazardous' }, { e: '🌡️', t: 'hazardous' }, 
-        { e: '🧪', t: 'hazardous' }, { e: '💉', t: 'hazardous' },
-        /* Recyclable */
-        { e: '🍾', t: 'recyclable' }, { e: '📰', t: 'recyclable' }, { e: '📦', t: 'recyclable' }, 
-        { e: '🥫', t: 'recyclable' }, { e: '🥛', t: 'recyclable' },
-        /* Non-Recycle */
-        { e: '🚬', t: 'non-recycle' }, { e: '🥤', t: 'non-recycle' }, { e: '🥡', t: 'non-recycle' }, 
-        { e: '🍕', t: 'non-recycle' }, { e: '🍟', t: 'non-recycle' }
-    ];
-
-    function init() {
-        playerName = document.getElementById('username').value.trim() || "Eco-Hero";
-        document.getElementById('start-screen').classList.add('hidden');
-        active = true;
-        spawnLoop();
+        } catch (e) { lb.innerHTML = "Leaderboard error."; }
     }
 
     function triggerFeedback(isCorrect, correctType = "") {
         const fb = document.getElementById('feedback-text');
-        if (isCorrect) {
-            fb.innerText = "Correct ✅";
-            fb.className = "correct";
-        } else {
-            fb.innerHTML = `Incorrect ❌<br><span style="font-size:1.2rem;">It was ${binNames[correctType]}</span>`;
-            fb.className = "incorrect";
+        if (isCorrect) { fb.innerText = "Correct ✅"; fb.className = "correct"; }
+        else { 
+            let name = binNames[correctType];
+            if(correctType === 'non-recycle') name = "Non-Recyclable (Greasy)";
+            fb.innerHTML = `Incorrect ❌<br><small>It was ${name}</small>`; 
+            fb.className = "incorrect"; 
         }
         fb.style.opacity = '1';
-        fb.style.transform = 'translate(-50%, -100%) scale(1.1)';
-        setTimeout(() => {
-            fb.style.opacity = '0';
-            fb.style.transform = 'translate(-50%, -50%) scale(1)';
-        }, 1200);
+        setTimeout(() => { fb.style.opacity = '0'; }, 1200);
     }
 
     function spawnLoop() {
         if (!active) return;
         const data = items[Math.floor(Math.random() * items.length)];
         const el = document.createElement('div');
-        el.className = 'trash-item';
-        el.innerHTML = data.e;
-        el.style.left = Math.random() * (document.getElementById('game-area').offsetWidth - 70) + 'px';
+        el.className = 'trash-item'; el.innerHTML = data.e;
+        el.style.left = Math.random() * (window.innerWidth - 70) + 'px';
         el.style.top = '-80px';
         document.getElementById('game-area').appendChild(el);
 
-        let y = -80;
-        let speed = 1.2 + (score / 500); 
-        let isDragging = false;
-
+        let y = -80, isDragging = false;
         const fall = setInterval(() => {
             if (!active) { clearInterval(fall); el.remove(); return; }
             if (!isDragging) {
-                y += speed;
+                y += 1.2 + (score / 500);
                 el.style.top = y + 'px';
-                if (y > window.innerHeight - 150) { 
-                    handleMistake(data.t);
-                    clearInterval(fall); el.remove(); 
-                }
+                if (y > window.innerHeight - 150) { handleMistake(data.t); clearInterval(fall); el.remove(); }
             }
         }, 16);
 
         el.onpointerdown = (e) => { isDragging = true; el.setPointerCapture(e.pointerId); };
-        el.onpointermove = (e) => {
-            if (!isDragging) return;
-            const area = document.getElementById('game-area').getBoundingClientRect();
-            el.style.left = (e.clientX - area.left - 35) + 'px';
-            el.style.top = (e.clientY - area.top - 35) + 'px';
-        };
-
+        el.onpointermove = (e) => { if (isDragging) { el.style.left = (e.clientX - 35) + 'px'; el.style.top = (e.clientY - 35) + 'px'; } };
         el.onpointerup = (e) => {
             isDragging = false;
             const rect = el.getBoundingClientRect();
             const bin = document.getElementById(data.t).getBoundingClientRect();
-            
             if (rect.bottom > bin.top && rect.left < bin.right && rect.right > bin.left) {
-                score += 10; coins += 5;
-                document.getElementById('score').innerText = score;
-                document.getElementById('coins').innerText = coins;
-                triggerFeedback(true);
-                clearInterval(fall); el.remove();
+                score += 10; document.getElementById('score').innerText = score;
+                triggerFeedback(true); clearInterval(fall); el.remove();
             } else if (rect.bottom > bin.top - 50) {
-                handleMistake(data.t);
-                clearInterval(fall); el.remove();
-            } else {
-                y = parseFloat(el.style.top);
-            }
+                handleMistake(data.t); clearInterval(fall); el.remove();
+            } else { y = parseFloat(el.style.top); }
         };
-
-        setTimeout(spawnLoop, Math.max(1200, 3200 - (score * 3.5)));
+        setTimeout(spawnLoop, Math.max(1200, 3000 - (score * 4)));
     }
 
-    function handleMistake(correctBin) {
+    function handleMistake(c) {
         lives--;
-        triggerFeedback(false, correctBin);
         document.getElementById('lives').innerText = "♥️".repeat(lives) + "🖤".repeat(5 - lives);
-        if (lives <= 0) {
-            saveGlobalScore(playerName, score);
-            gameOver();
+        triggerFeedback(false, c);
+        if (lives <= 0) { 
+            active = false; 
+            document.getElementById('end-screen').classList.remove('hidden'); 
+            saveGlobalScore(playerName, score); 
         }
-    }
-
-    function gameOver() {
-        active = false;
-        document.getElementById('end-screen').classList.remove('hidden');
-        saveAndShowLeaderboard();
-    }
-
-    function saveAndShowLeaderboard() {
-        let board = JSON.parse(localStorage.getItem('mynzoWasteLB_v3')) || [];
-        board.push({ name: playerName, score: score });
-        board.sort((a, b) => b.score - a.score);
-        board = board.slice(0, 5);
-        localStorage.setItem('mynzoWasteLB_v3', JSON.stringify(board));
-
-        const lbContent = document.getElementById('lb-content');
-        lbContent.innerHTML = "<h3 style='text-align:center; margin-top:0;'>🏆 TOP 5 ECO-HEROES</h3>";
-        board.forEach((entry, i) => {
-            lbContent.innerHTML += `<div class="lb-row"><span>${i+1}. ${entry.name}</span><span>${entry.score}</span></div>`;
-        });
     }
 </script>
 </body>
