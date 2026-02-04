@@ -3,189 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bin It to Win It!</title>
+    <title>Waste Manager Pro</title>
     <style>
         :root {
-            --sky-blue: #b3e5fc; --grass-green: #a2d149; --panel-blue: #a3d8f4;
-            --organic: #8bc34a; --hazardous: #e53935; --recyclable: #fdd835; --non-recycle: #1e88e5;
+            --sky: #b3e5fc; --grass: #a2d149;
+            --organic: #8bc34a; --hazardous: #e53935; --recyclable: #fdd835; --non: #1e88e5;
         }
-        body { margin: 0; padding: 0; font-family: 'Arial Rounded MT Bold', sans-serif; background: linear-gradient(to bottom, #e1f5fe 0%, var(--sky-blue) 60%, var(--grass-green) 100%); overflow: hidden; touch-action: none; display: flex; justify-content: center; }
-        #game-area { width: 100%; max-width: 500px; height: 100vh; position: relative; overflow: hidden; }
+        body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom, var(--sky), var(--grass)); overflow: hidden; touch-action: none; }
+        #game-box { width: 100vw; height: 100vh; position: relative; }
         
-        /* Stats Header */
-        .header { display: flex; flex-direction: column; gap: 10px; padding: 15px; position: absolute; width: 100%; box-sizing: border-box; z-index: 50; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; }
-        .stat-box { background: var(--panel-blue); padding: 8px 15px; border-radius: 12px; color: white; font-weight: bold; box-shadow: 0 4px 0 rgba(0,0,0,0.1); border: 2px solid white; font-size: 1rem; }
-        
-        /* Feedback Text */
-        #feedback-text { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 1.8rem; font-weight: bold; z-index: 60; pointer-events: none; opacity: 0; text-align: center; width: 90%; transition: opacity 0.2s; }
-        .correct { color: #2e7d32; } .incorrect { color: #d32f2f; }
+        /* Stats */
+        .stats { position: absolute; top: 10px; width: 100%; display: flex; justify-content: space-around; z-index: 100; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000; }
 
-        /* Bins & Lids */
-        .bins-container { position: absolute; bottom: 30px; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 10px; box-sizing: border-box; z-index: 10; }
-        .bin-wrapper { text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .dustbin { width: 65px; height: 85px; position: relative; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: inset -5px 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1); }
+        /* Bins Area */
+        .bin-row { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: space-around; padding: 0 5px; box-sizing: border-box; }
+        .bin-container { display: flex; flex-direction: column; align-items: center; width: 22%; }
+        .bin { width: 100%; height: 80px; border-radius: 0 0 10px 10px; position: relative; display: flex; justify-content: center; align-items: center; font-size: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         
-        /* The Lid Fix */
-        .dustbin::before { content: ''; position: absolute; top: -10px; left: -5px; width: 75px; height: 12px; border-radius: 5px; background: inherit; filter: brightness(1.1); border: 1px solid rgba(0,0,0,0.1); }
+        /* BIN LIDS */
+        .bin::before { content: ''; position: absolute; top: -10px; width: 110%; height: 12px; background: inherit; filter: brightness(1.2); border-radius: 5px; border: 1px solid rgba(0,0,0,0.1); }
         
-        .label { margin-top: 15px; font-size: 0.6rem; font-weight: bold; color: #2e5a00; text-transform: uppercase; }
+        .label { font-size: 10px; font-weight: bold; margin-top: 15px; text-transform: uppercase; color: #333; }
 
-        /* Draggable Trash */
-        .trash-item { position: absolute; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 50px; z-index: 100; cursor: grab; touch-action: none; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); }
+        /* Trash Items */
+        .item { position: absolute; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; font-size: 45px; z-index: 50; cursor: move; touch-action: none; }
 
-        /* Screens */
-        .screen { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .card { background: white; padding: 25px; border-radius: 25px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .instructions { text-align: left; background: #f0f7ff; padding: 15px; border-radius: 15px; font-size: 0.9rem; color: #444; margin: 15px 0; border: 1px solid #d0e5ff; }
-        input { width: 80%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 2px solid var(--panel-blue); font-size: 1.1rem; text-align: center; }
-        .btn { background: #ff9800; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #e65100; }
-        
-        .leaderboard { text-align: left; background: #f8f9fa; border-radius: 15px; padding: 10px; margin: 15px 0; max-height: 150px; overflow-y: auto; }
-        .lb-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        /* UI Screens */
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; color: #000; }
+        .modal { background: white; padding: 20px; border-radius: 20px; width: 80%; text-align: center; max-width: 400px; }
+        .btn { background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 18px; cursor: pointer; margin-top: 10px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div id="game-area">
-    <div id="feedback-text">Correct ✅</div>
-    
-    <div class="header">
-        <div class="top-row">
-            <div class="stat-box">⭐ <span id="score">0</span></div>
-            <div id="lives" style="font-size:1.5rem;">♥️♥️♥️♥️♥️</div>
-            <div class="stat-box">🪙 <span id="coins">0</span></div>
+<div id="game-box">
+    <div class="stats">
+        <div>Score: <span id="score-val">0</span></div>
+        <div id="lives-val">❤️❤️❤️❤️❤️</div>
+    </div>
+
+    <div class="bin-row">
+        <div class="bin-container"><div id="org" class="bin" style="background:var(--organic)">🍃</div><div class="label">Organic</div></div>
+        <div class="bin-container"><div id="haz" class="bin" style="background:var(--hazardous)">💀</div><div class="label">Hazardous</div></div>
+        <div class="bin-container"><div id="rec" class="bin" style="background:var(--recyclable)">♻️</div><div class="label">Recyclable</div></div>
+        <div class="bin-container"><div id="non" class="bin" style="background:var(--non)">🚮</div><div class="label">Non-Recycle</div></div>
+    </div>
+
+    <div id="start-screen" class="overlay">
+        <div class="modal">
+            <h2>Waste Manager</h2>
+            <p>Drag items to the correct bin.<br><b>🍕 Pizza is Organic!</b></p>
+            <input type="text" id="user-name" placeholder="Name" style="padding:10px; width:80%; margin-bottom:10px;">
+            <button class="btn" onclick="playGame()">START GAME</button>
         </div>
     </div>
 
-    <div class="bins-container">
-        <div class="bin-wrapper"><div class="dustbin" id="organic" style="background: var(--organic);">🍃</div><div class="label">Organic</div></div>
-        <div class="bin-wrapper"><div class="dustbin" id="hazardous" style="background: var(--hazardous);">💀</div><div class="label">Hazardous</div></div>
-        <div class="bin-wrapper"><div class="dustbin" id="recyclable" style="background: var(--recyclable);">♻️</div><div class="label">Recyclable</div></div>
-        <div class="bin-wrapper"><div class="dustbin" id="non-recycle" style="background: var(--non-recycle);">🚮</div><div class="label">Non-Recycle</div></div>
-    </div>
-
-    <div id="start-screen" class="screen">
-        <div class="card">
-            <h1 style="color:#ff9800; margin:0;">WASTE MANAGER</h1>
-            <div class="instructions">
-                <strong>How to Play:</strong><br>
-                1. Drag items to the correct bin.<br>
-                2. 🍕 <b>Pizza is Organic!</b><br>
-                3. Don't let items hit the floor.
-            </div>
-            <input type="text" id="username" placeholder="Enter Your Name" maxlength="12">
-            <button class="btn" onclick="init()">START MISSION</button>
-        </div>
-    </div>
-
-    <div id="end-screen" class="screen hidden">
-        <div class="card">
-            <h2 style="margin:0;">GAME OVER</h2>
-            <p id="final-score-display"></p>
-            <div class="leaderboard" id="lb-content">Loading Global Scores...</div>
-            <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
+    <div id="end-screen" class="overlay hidden">
+        <div class="modal">
+            <h2>Game Over</h2>
+            <p id="final-score"></p>
+            <div id="lb" style="font-size: 12px; background: #eee; padding: 10px; margin: 10px 0; border-radius: 10px;">Loading Scores...</div>
+            <button class="btn" onclick="location.reload()">RETRY</button>
         </div>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4Oauf9hlaGeRFLOR5rT6SBdomtLCqvDbH1O_upWWxclHjJop3_EctZ-oUpMXERXzO/exec"; 
-    
-    let score = 0, lives = 5, active = false, playerName = "";
-    const items = [
-        { e: '🍎', t: 'organic' }, { e: '🍌', t: 'organic' }, { e: '🍕', t: 'organic' }, { e: '🥦', t: 'organic' },
-        { e: '🔋', t: 'hazardous' }, { e: '🧪', t: 'hazardous' }, { e: '💉', t: 'hazardous' },
-        { e: '🍾', t: 'recyclable' }, { e: '📰', t: 'recyclable' }, { e: '🥫', t: 'recyclable' },
-        { e: '🚬', t: 'non-recycle' }, { e: '🥤', t: 'non-recycle' }, { e: '🥡', t: 'non-recycle' }
+    const URL = "https://script.google.com/macros/s/AKfycby4Oauf9hlaGeRFLOR5rT6SBdomtLCqvDbH1O_upWWxclHjJop3_EctZ-oUpMXERXzO/exec";
+    let score = 0, lives = 5, isRunning = false;
+    const trash = [
+        {e:'🍎', t:'org'}, {e:'🍌', t:'org'}, {e:'🍕', t:'org'},
+        {e:'🔋', t:'haz'}, {e:'🧪', t:'haz'},
+        {e:'📰', t:'rec'}, {e:'🥫', t:'rec'},
+        {e:'🚬', t:'non'}, {e:'🥤', t:'non'}
     ];
 
-    function init() {
-        playerName = document.getElementById('username').value.trim() || "Eco-Hero";
+    function playGame() {
         document.getElementById('start-screen').classList.add('hidden');
-        active = true;
-        spawnItem();
+        isRunning = true;
+        spawn();
     }
 
-    function triggerFeedback(isCorrect) {
-        const fb = document.getElementById('feedback-text');
-        fb.innerText = isCorrect ? "Correct ✅" : "Incorrect ❌";
-        fb.className = isCorrect ? "correct" : "incorrect";
-        fb.style.opacity = '1';
-        setTimeout(() => { fb.style.opacity = '0'; }, 1000);
-    }
-
-    function spawnItem() {
-        if (!active) return;
-        const data = items[Math.floor(Math.random() * items.length)];
+    function spawn() {
+        if(!isRunning) return;
+        const info = trash[Math.floor(Math.random() * trash.length)];
         const el = document.createElement('div');
-        el.className = 'trash-item'; el.innerHTML = data.e;
-        el.style.left = Math.random() * (window.innerWidth - 70) + 'px';
-        el.style.top = '-80px';
-        document.getElementById('game-area').appendChild(el);
+        el.className = 'item';
+        el.innerHTML = info.e;
+        el.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+        el.style.top = "-60px";
+        document.getElementById('game-box').appendChild(el);
 
-        let y = -80, isDragging = false;
+        let y = -60;
+        let dragging = false;
+
         const fall = setInterval(() => {
-            if (!active) { clearInterval(fall); el.remove(); return; }
-            if (!isDragging) {
-                y += 1.5 + (score / 400);
-                el.style.top = y + 'px';
-                if (y > window.innerHeight - 150) { handleMistake(); clearInterval(fall); el.remove(); }
+            if(!isRunning) { clearInterval(fall); el.remove(); return; }
+            if(!dragging) {
+                y += 2;
+                el.style.top = y + "px";
+                if(y > window.innerHeight - 140) {
+                    clearInterval(fall);
+                    el.remove();
+                    loseLife();
+                }
             }
-        }, 16);
+        }, 20);
 
-        el.onpointerdown = (e) => { isDragging = true; el.setPointerCapture(e.pointerId); };
-        el.onpointermove = (e) => { 
-            if (isDragging) { 
-                const area = document.getElementById('game-area').getBoundingClientRect();
-                el.style.left = (e.clientX - area.left - 35) + 'px'; 
-                el.style.top = (e.clientY - area.top - 35) + 'px'; 
-            } 
+        el.onpointerdown = (e) => { dragging = true; el.setPointerCapture(e.pointerId); };
+        el.onpointermove = (e) => {
+            if(dragging) {
+                el.style.left = (e.clientX - 30) + "px";
+                el.style.top = (e.clientY - 30) + "px";
+            }
         };
         el.onpointerup = (e) => {
-            isDragging = false;
-            const rect = el.getBoundingClientRect();
-            const bin = document.getElementById(data.t).getBoundingClientRect();
-            if (rect.bottom > bin.top && rect.left < bin.right && rect.right > bin.left) {
-                score += 10; document.getElementById('score').innerText = score;
-                triggerFeedback(true); clearInterval(fall); el.remove();
-            } else if (rect.bottom > bin.top - 50) {
-                handleMistake(); clearInterval(fall); el.remove();
-            } else { y = parseFloat(el.style.top); }
+            dragging = false;
+            const b = document.getElementById(info.t).getBoundingClientRect();
+            const r = el.getBoundingClientRect();
+            if(r.bottom > b.top && r.left < b.right && r.right > b.left) {
+                score += 10;
+                document.getElementById('score-val').innerText = score;
+                clearInterval(fall);
+                el.remove();
+            }
         };
-        setTimeout(spawnItem, Math.max(1000, 2500 - (score * 3)));
+        setTimeout(spawn, 2500);
     }
 
-    function handleMistake() {
+    function loseLife() {
         lives--;
-        document.getElementById('lives').innerText = "♥️".repeat(lives) + "🖤".repeat(5 - lives);
-        triggerFeedback(false);
-        if (lives <= 0) {
-            active = false;
+        document.getElementById('lives-val').innerText = "❤️".repeat(lives) + "🖤".repeat(5-lives);
+        if(lives <= 0) {
+            isRunning = false;
             document.getElementById('end-screen').classList.remove('hidden');
-            document.getElementById('final-score-display').innerText = "Score: " + score;
-            saveGlobalScore();
+            document.getElementById('final-score').innerText = "Score: " + score;
+            save();
         }
     }
 
-    async function saveGlobalScore() {
+    async function save() {
+        const name = document.getElementById('user-name').value || "Hero";
         try {
-            await fetch(SCRIPT_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({ name: playerName, score: score }) });
-            setTimeout(loadGlobalLeaderboard, 1200);
-        } catch (e) { loadGlobalLeaderboard(); }
-    }
-
-    async function loadGlobalLeaderboard() {
-        const lb = document.getElementById('lb-content');
-        try {
-            const res = await fetch(SCRIPT_URL);
+            await fetch(URL, {method:"POST", mode:"no-cors", body: JSON.stringify({name:name, score:score})});
+            const res = await fetch(URL);
             const data = await res.json();
-            lb.innerHTML = "🏆 GLOBAL TOP 5<br>";
-            data.forEach((entry, i) => {
-                lb.innerHTML += `<div class="lb-row"><span>${i+1}. ${entry[0]}</span><span>${entry[1]}</span></div>`;
-            });
-        } catch (e) { lb.innerHTML = "Leaderboard offline. Score saved!"; }
+            let h = "<b>TOP SCORES</b><br>";
+            data.slice(0,5).forEach(r => h += r[0] + ": " + r[1] + "<br>");
+            document.getElementById('lb').innerHTML = h;
+        } catch(e) { document.getElementById('lb').innerText = "Score Saved!"; }
     }
 </script>
 </body>
